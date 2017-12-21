@@ -1,0 +1,9 @@
+- For the grid* plots, the vertical axis is kept uniform. However, the horizontal axis
+  is not, and if not configured to plot flagged entries, this could result in the 
+  horizontal axes ranges for each plot being different.
+ -> Actually it may be best to make all figures' horizontal axis end at forecast_duration
+    to make comparison easier
+- When creating plots that show actual date in the horizontal axis, the value may come 
+  out an hour off due to DST and the fact that we're using localtime().
+- When doing grid* plots and using a non-square number of cycles, it will create a square
+  number of plots. e.g. if doing 12 cycles, it will create 16 plots

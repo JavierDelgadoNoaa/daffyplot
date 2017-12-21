@@ -1,0 +1,19 @@
+This documentation is specificcally for users running on Jet and possibly other
+systems.
+
+This package uses some external python packages that are not installed on Jet. 
+The easiest way to get it to run is to use the common Canopy python package that
+I have set up in my directory here: /home/Javier.Delgado/apps/canopy
+The "installation" process is to simply run the "canopy" executable there and follow 
+the prompts to set your paths and ensure that you choose "yes" when asked if you want to make it
+your default Python. You will need X11 to run canopy. This executable will modify
+your shell's RC file (e.g. .bashrc), so you may want to make a backup first. 
+Once it's set up, you can use Python as usual and it will use Canopy.
+You may want to test any other Python applications you have to ensure nothing was broken.
+
+
+POSSIBLE ISSUES
+- If you get an error message running canopy, you may need to unset PYTHONPATH before 
+  running it.
+
+

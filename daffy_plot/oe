@@ -1,0 +1,72 @@
+/home/Javier.Delgado/local/lib64/python2.6/site-packages/mpl_toolkits/basemap/pyproj.py:50: RuntimeWarning: compiletime version 2.6 of module '_proj' does not match runtime version 2.7
+  from mpl_toolkits.basemap import _proj
+/home/Javier.Delgado/local/lib64/python2.6/site-packages/mpl_toolkits/basemap/__init__.py:36: RuntimeWarning: compiletime version 2.6 of module '_geoslib' does not match runtime version 2.7
+  import _geoslib
+INFO:root:Guessing this is an analysis run based on namelist value of 'miter'
+INFO:root:Since this is an analysis run, will only process ob types for which a diag file was created for the analysis
+DEBUG:root:Looking for files matching pattern ./gsi_test_dir/diag_*_anl.200508010600
+DEBUG:root:Using GSI-generated binary diagnostic files
+DEBUG:root:Processing ob type: hirs4_n19 for step ges
+9999
+DEBUG:root:Processing ob type: hirs4_n19 for step anl
+9999
+DEBUG:root:Processing ob type: amsua_aqua for step ges
+9999
+DEBUG:root:Processing ob type: amsua_aqua for step anl
+9999
+DEBUG:root:Processing ob type: mhs_n19 for step ges
+9999
+DEBUG:root:Processing ob type: mhs_n19 for step anl
+9999
+DEBUG:root:Processing ob type: amsua_n19 for step ges
+9999
+DEBUG:root:Processing ob type: amsua_n19 for step anl
+9999
+DEBUG:root:Processing ob type: seviri_m09 for step ges
+9999
+DEBUG:root:Processing ob type: seviri_m09 for step anl
+9999
+DEBUG:root:Processing ob type: sndrd4_g13 for step ges
+9999
+DEBUG:root:Processing ob type: sndrd4_g13 for step anl
+9999
+DEBUG:root:Processing ob type: amsua_n15 for step ges
+9999
+DEBUG:root:Processing ob type: amsua_n15 for step anl
+9999
+DEBUG:root:Processing ob type: sndrd1_g13 for step ges
+9999
+DEBUG:root:Processing ob type: sndrd1_g13 for step anl
+9999
+DEBUG:root:Processing ob type: sndrd3_g13 for step ges
+9999
+DEBUG:root:Processing ob type: sndrd3_g13 for step anl
+9999
+DEBUG:root:Processing ob type: sndrd2_g13 for step ges
+9999
+DEBUG:root:Processing ob type: sndrd2_g13 for step anl
+9999
+DEBUG:root:Processing ob type: mhs_n18 for step ges
+9999
+DEBUG:root:Processing ob type: mhs_n18 for step anl
+9999
+DEBUG:root:Processing ob type: amsua_n18 for step ges
+9999
+DEBUG:root:Processing ob type: amsua_n18 for step anl
+9999
+DEBUG:root:Processing ob type: conv for step ges
+9999
+DEBUG:root:Processing ob type: conv for step anl
+9999
+WARNING:root:No obs for ob type amsua_n15
+WARNING:root:No obs for ob type amsua_aqua
+WARNING:root:No obs for ob type amsua_n18
+WARNING:root:No obs for ob type seviri_m09
+WARNING:root:No obs for ob type mhs_n19
+WARNING:root:No obs for ob type mhs_n18
+WARNING:root:No obs for ob type amsua_n19
+WARNING:root:No obs for ob type hirs4_n19
+WARNING:root:No obs for ob type sndrd4_g13
+WARNING:root:No obs for ob type sndrd2_g13
+WARNING:root:No obs for ob type sndrd3_g13
+WARNING:root:No obs for ob type sndrd1_g13

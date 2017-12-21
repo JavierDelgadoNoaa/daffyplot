@@ -1,0 +1,65 @@
+# reference : http://matplotlib.org/users/customizing.html
+
+backend : agg
+
+figure.figsize : 10,8 # usually have more horizontal space since title and footer use space
+figure.dpi : 200
+
+axes.titlesize : 16
+axes.labelsize : 16
+axes.labelweight : 800
+axes.labelcolor : black
+axes.facecolor : f2f2f2 # background color
+
+text.color : black
+
+#lines.linewidth : 10.0 # DO NOT USE - Since the axhline uses a 'linewidth' field, it will create
+                        #  some annoying tick mark like things in the x axis 
+                        # It's not being obeyed anyway it's overriden by line_width cfg param
+#lines.markersize : 10
+#lines.marker      : None 
+
+#xtick.labelsize : 14
+xtick.color          : 000033      
+#xtick.major.pad : 5
+#xtick.minor.pad : 5
+#xtick.minor.size : 0
+#xtick.major.size : 0
+
+#ytick.labelsize : 8
+ytick.color          : 000033      # color of the tick labels
+#ytick.major.pad      : 4      # distance to major tick label in points
+#ytick.minor.pad      : 4      # distance to the minor tick label in points
+
+font.family : sans-serif
+font.serif : Utopia, ITC Bookman, Bookman, Times New Roman, Times, Palatino, Charter, serif
+font.sans-serif : Arial, Bitstream Vera Sans, Lucida Grande, Verdana, Geneva, Lucid, Helvetica, sans-serif
+
+legend.fontsize : 12
+legend.fancybox : False # rounded edges = True
+
+savefig.facecolor : fff2e5 # background color (excluding axes box)
+savefig.dpi : 200
+#savefig.format : pdf
+savefig.transparent : False # background
+savefig.bbox : tight
+savefig.pad_inches : 0.1
+
+# for PS-backend
+ps.papersize : letter
+ps.usedistiller : False # Set to 'xpdf ' for publication-quality. Requires ghostscript, xpdf, ps2eps
+ps.distiller.res : 6000
+
+# for PDF backend
+#pdf.compress : 6 #0-9
+
+# for MPL debugging
+#verbose.level  : silent      # one of silent, helpful, debug, debug-annoying
+#verbose.fileo  : sys.stdout  # a log filename, sys.stdout or sys.stderr
+
+###ANIMATION settings
+#animation.html : 'none'           # How to display the animation as HTML in
+                                   # the IPython notebook. 'html5' uses
+                                   # HTML5 video tag.
+#animation.writer : ffmpeg         # MovieWriter 'backend' to use
+#animation.codec : mpeg4           # Codec to use for writing movie

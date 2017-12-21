@@ -1,0 +1,274 @@
+Index: daffy_plot/daffy_dataset.py
+===================================================================
+--- daffy_plot/daffy_dataset.py	(revision 47)
++++ daffy_plot/daffy_dataset.py	(working copy)
+@@ -2,7 +2,7 @@
+ import os
+ import sys
+ import logging 
+-from pycane.timing import conversions
++from nwpy.dateutils  import conversions
+ from pycane.postproc.tracker import utils as trkutils
+ from pycane.postproc.tracker import objects as trkobj
+ # export PYTHONPATH=$PYTHONPATH:/home/Javier.Delgado/apps/pyhwrf/r3963/ush
+Index: daffy_plot/daffy_plot_config.py
+===================================================================
+--- daffy_plot/daffy_plot_config.py	(revision 47)
++++ daffy_plot/daffy_plot_config.py	(working copy)
+@@ -12,7 +12,7 @@
+ from daffy_dataset import NmmbAutorunnerExperimentDataset
+ from daffy_dataset import AmbiguousProductException, MissingProductException
+ 
+-from pycane.timing import conversions # only needed temp. for best_track hack
++from nwpy.dateutils  import conversions
+ from pycane.postproc.tracker import objects as trkobj
+ from pycane.postproc.tracker import utils as trkutils
+ 
+@@ -47,9 +47,9 @@
+ 
+     def get_config_file(self, parser):
+         '''
+-        Get the config file from the passed in args, if it was pass
+-        This is done before parsing the rest of the command line options since the other command line options
+-        override what is set in the config file
++        Get the config file from the passed in-args, or use default.
++        This is done before parsing the rest of the command line options since
++        the other command line options override what is set in the config file
+         '''
+         (options, args) = parser.parse_args()
+         if options.config_file:
+@@ -85,6 +85,7 @@
+             try:
+                 os.environ['TZ'] = 'UTC'
+                 tzset()
++                # TODO : ? timezone
+                 self.start_date = mktime( strptime(options.start_date, '%m-%d-%Y %H:%M') )
+             except ValueError:
+                 print 'Passed in start date', options.start_date, 'does not match expected format MM-DD-YYYY hh:mm'
+@@ -387,6 +388,7 @@
+             # probably exist for all experiments. 
+             exptTypeFound = False
+             try:
++                #import pdb ; pdb.set_trace()
+                 ds = DaffyExperimentDataset(
+                     name=datasets[i], path=data_paths[i], 
+                     start_date=self.start_date, end_date=self.end_date, 
+@@ -400,7 +402,9 @@
+                 exptTypeFound = True
+                 self.log.info("Guessing this is a DAFFY experiment based on "\
+                               "existance of %s" %p)
+-            except (MissingProductException, AmbiguousProductException):
++            except (MissingProductException, AmbiguousProductException) as e:
++                self.log.info("Assuming it's not a DAFFY experiment due to exc."
++                         "Original exception: {0}".format(e))
+                 pass
+             if not exptTypeFound:
+                 try:
+Index: daffy_plot/plot_helper.py
+===================================================================
+--- daffy_plot/plot_helper.py	(revision 47)
++++ daffy_plot/plot_helper.py	(working copy)
+@@ -23,9 +23,9 @@
+ from daffy_dataset import DaffyExperimentDataset
+ from daffy_plot_config import DaffyPlotConfig
+ #from map_plotter import plot_track # TODO : Use a pycane lib instead. This is in extern
+-from pycane.postproc.viz.map import track_plotter
+-from pycane.postproc.viz.map import bling as pycane_bling
+-from pycane.postproc.viz.tcv import tcv_plot_helper
++from pycane.postproc.viz.tcv import track_plotter
++from nwpy.viz.map import bling as pycane_bling
++from  pycane.postproc.viz.tcv import tcv_plot_helper
+ from pycane.postproc.tracker import objects as trkobj
+ from pycane.postproc.tracker import utils as trkutils
+ #
+@@ -470,7 +470,7 @@
+         self.shade_lines_by_intensity = shadeLines
+         self.decorate_map()
+         if draw_nature_track:
+-            self.draw_nature_run_track(axes)
++            self.draw_nature_run_track(axes=axes)
+ 
+     def draw_nature_run_track(self, zorder=2, shadeLines=True, axes=plt.gca(),
+                               lineAlpha=0.8):
+@@ -489,6 +489,7 @@
+         else:
+             nrWindSpeeds = None
+         # TODO pass in the gridline frequency
++        #import pdb ; pdb.set_trace()
+         track_plotter.plot_track(
+                     nrLats, nrLons, windspeeds=nrWindSpeeds,
+                     basemap=self.basemap,
+Index: env.sh
+===================================================================
+--- env.sh	(revision 47)
++++ env.sh	(working copy)
+@@ -1,7 +1,7 @@
+-export PYCANE_DIST=~/apps/pycane_dist/trunk
+-export PYHWRF_DIST=~/scratch/apps_tmp/pyhwrf/emc/dist/bleeding_edge
++export PYCANE_DIST=/home/Javier.Delgado/apps/pycane_dist/master
++export PYHWRF_DIST=/home/Javier.Delgado/apps/pyhwrf/emc/dist/bleeding_edge
+ 
+-pycane_env=$PYCANE_DIST/scripts/env.sh
++pycane_env=$PYCANE_DIST/etc/env.sh
+ pyhwrf_libs=$PYHWRF_DIST/ush
+ 
+ if [[ ! -e $pycane_env ]] ; then
+Index: sample.cfg
+===================================================================
+--- sample.cfg	(revision 47)
++++ sample.cfg	(working copy)
+@@ -3,19 +3,17 @@
+ # here are merely for human readability, they have no impact on how the
+ # data is read. But the number of variables here should be equal
+ # to the number of data_paths, plot_colors, and line_styles
+-ds2 = gsi1
++ds1 = control
++ds2 = plusPosteriorInflChange
++ds3 = plusPostInflMinusAdditiveInfl
+ 
+ [data_paths]
+ # These are the paths to the directories containing the data corresponding to
+ # the datasets in [dataset_names].
+ # If using the DAFFY directory structure, this should be the 'run' directory
+-#exp1 = '/foo/bar/gsi/run'
+-#exp2 = '/foo/bar/enkf/run'
+-#r2 = /home/Javier.Delgado/tracker4
+-#r2 = /home/Javier.Delgado/tracker5_basic
+-#r2 = /home/Javier.Delgado/tracker5_op_moving_20x20_v2
+-#r2 = /home/Javier.Delgado/tracker5_test
+-r2 = /home/Javier.Delgado/scratch/daffy_test/160_jet/160_jet_gsi_noreuse
++r1 = /home/Javier.Delgado/projects/osse/experiments/test_enkf/control/run
++r2 = /home/Javier.Delgado/projects/osse/experiments/test_enkf/with_additive_inflation/run
++r3 = /home/Javier.Delgado/projects/osse/experiments/test_enkf/new_enkf_cfg/run
+ 
+ [plot_colors]
+ # Colors to use for each dataset being plotted
+@@ -22,12 +20,43 @@
+ # Should be either the string or the 6-digit hex code. Hex code may be wrapped in quotes to 
+ # prevent syntax highlighting from treating it as a comment. The code will not treat it as
+ # a comment
++c1 = red
+ c2 = green
++c3 = blue
+ 
+ [line_styles]
+ # Corresponding line styles. See MatplotLib line styles for available styles
+-s1 = -
++s1 = --
++s2 = -
++s3 = -
+ 
++[line_widths]
++# for mean plots and others with just one line per DS
++s1 = 3.5
++s2 = 3.5
++s3 = 3.5
++# for track spagehetti plots
++#s8a = 0.3
++#s8 = 0.4
++#s10 = 0.8
++#s11 = 6.0
++
++[storm_settings]
++# The storm ID, which is just the numerical part. This is used for real cases
++storm_id = 00L
++# Path to database containing track files arranged by storm. The HWRFConfig
++# parser will be used to interpolate this. It will also be globbed to deal
++# with the fact that the storm name may go from 'invest' to the name (and back)
++# NOTE : Lots of hackage here in daffy_plot_config.py
++# daffy_plot_config.py and pycane::get_bdeck_track_data are currently hardcoded
++# to get the nhc-formatted b-decks, which are named like so: bal092012.dat.gz
++#best_track_db_path = /scratch3/NAGAPE/aoml-osse/Thiago.Quirino/DATABASE/tracks/BEST_*%(storm_id)s_{aYMDH}_track.txt
++#best_track_db_path = /scratch3/NCEPDEV/hwrf/noscrub/input/SYNDAT/syndat_tcvitals.{aY}
++##best_track_db_path = ./static/nhc/{aY}/
++#best_track_db_path = /scratch3/NAGAPE/aoml-osse/Thiago.Quirino/DATABASE/tracks/BEST_*%(storm_id)
++# format used for track files in the database
++##best_track_db_format = diapost
++
+ [basic_settings]
+ # Should be 0-50 or CRITICAL, FATAL, ERROR, WARN, INFO, DEBUG. Higher number = less logging
+ log_level = 20
+@@ -61,6 +90,13 @@
+ annotate_unflagged_entries = True
+ # If True, flagged tracker entries will be used in the calculation of averages
+ include_flagged_tracker_entries_in_average = False
++# If True, ignore TC vitals data points whose lat/lon values are over land.
++# This will use whatever pycane.postproc.tracker does, which is currently to
++# use Basemap's is_land method. This adds a significant amount of processing time,
++# but not prohibitively so (e.g. <2 minutes for 40 cycles)
++# ** CAVEAT : Currently Pycane only has this implemented for Diapost tracks.
++# doing others is trivial.
++ignore_land_points = False
+ # Tracker data to use for _nature run_ TC stats (either "nolan" or "gfdl"). 
+ # Will be used as the "truth" value for all TCV stats related plots.
+ nature_run_tracker = nolan
+@@ -68,6 +104,22 @@
+ # truth_tracker_data_file = /lfs1/projects/hur-aoml/lbucci/meso_osse/wrf-arw/atcf/atcfNRD03.txt
+ truth_tracker_data_file = ./sample_datasets/atcfNRD03.txt
+ #truth_tracker_data_file = ./sample_datasets/gfdltrk_atcf_test.txt
++# Set various file and directory names (this could be moved to a separate config file since it is basically static).
++# As long as the DAFFY experiment was not run in a customized configuration, these can be left as is.
++output_file_prefix = ''
++# Prefix of subdirectory where products can be found
++products_directory_prefix = PRODUCTS.
++# Subdirectory where TC Vitals statistics are
++stats_directory_name = tc_stats
++# Pregenerated file with TC error statistics
++pregenerated_stats_file_name = error.txt 
++# Tracker output file name
++tracker_data_file_name = atcf_trk.txt
++# Type of average to use, either "mean" or "rmse"
++average_type = rmse
++# Type of difference to use between experiment and truth/best track
++# Either "absolute" or "relative". The latter will calculate experiment-best
++difference_type = absolute
+ 
+ [plot_settings]
+ # Values to use on the x axis for scripts that plot time vs some value
+@@ -78,8 +130,9 @@
+ # Note also: This may be overriden where it does not make sense. e.g. if 
+ # plotting average error, the epoch_zeta cannot be used because the wall clock time 
+ # corresponding to the forecast lead time is different for each cycle
+-#time_axis_parameter = fhr
+-time_axis_parameter = epoch_zeta
++# NOTE: epoch_zeta was broken after switch to pycane
++time_axis_parameter = fhr
++#time_axis_parameter = epoch_zeta
+ # legend/fig_legend position (best, lower right, upper left, etc.)
+ legend_position = best 
+ # alpha value for the legend (i.e. level of transparency)
+@@ -99,7 +152,21 @@
+ # is ignored when plotting "mslp_value", since those are always around 1000.
+ add_hline_at_zero = True
+ # how thick to make the lines (1.7 recommended for presentations)
+-line_width = 1.7
++# UPDATE: This will only affect lines not-specific to a dataset (e.g. Truth/Best line)
++#         The dataset-specific widths are set in [line_widths]
++line_width = 6.0
++# What viewing platform should we optimize plot settings for 
++# -> This will set the stylesheet under <stylesheets_path>/general
++# The styles there are overriden by styles under conf/styles/<methodName>
++# Note: only plots created by instances of DaffyPlotHelper (including children)
++# will use the style.
++#(desktop, paper, or presentation)
++view_target = presentation
++# top directory of path to style sheets
++stylesheets_path = ./conf/styles
++# Manually set a one or more stylesheets to override settings in <stylesheets_path>
++#stylesheets = /path/to/lower_priority, /path/to/higher_priority, /path/to/highest_priority
++
+ # Setting any of the following to True will set the corresponding
+ # vertical extents to the values below. If False, extents are automatically
+ # determined
+@@ -146,9 +213,9 @@
+ draw_map_boundary = False
+ fill_continents = True
+ # How frequent, in degrees, to show gridlines for latitude
+-latitude_line_freq = 5 ; parallels
++latitude_line_freq = 10 ; parallels
+ # How frequent, in degrees, to show gridlines for longitude
+-longitude_line_freq = 5 ; meridians
++longitude_line_freq = 10 ; meridians
+ # The following two specify where labels are placed on the figure using a 
+ # binary 4-digit mask (separated by a single white space!).
+ # The digits correspond to left,right,top,bottom; A '1' means show.
